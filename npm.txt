@@ -1,0 +1,3 @@
+sudo npm install -g expo-cil
+expo init 폴더이름
+expo install expo-location
