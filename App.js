@@ -3,19 +3,34 @@ import React from "react";
 import Loading from "./Loading";
 import * as Location from "expo-location";
 import { Alert } from "react-native";
+import axios from "axios";
+import Weather from "./Weather";
+
+const API_KEY = "b38ca1ca5fc1a90ed48088365cf184e2";
 
 export default class extends React.Component {
     state = {
         isLoading: true,
     };
+    getWeather = async (latitude, longitude) => {
+        const { data } = await axios.get(
+            `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
+        );
+        console.log(data.main.temp);
+        this.setState({ isLoading: false, temp: data.main.temp });
+    };
+
     getLocation = async () => {
         try {
             // throw Error();
             await Location.requestForegroundPermissionsAsync(); //이걸로 사용자한테 위치 추적해도 되냐고 물어봄
 
-            const { coords } = await Location.getCurrentPositionAsync(); //coords es6에서 사용
-            console.log(coords.latitude, coords.longitude);
-            this.setState({ isLoading: false });
+            const {
+                coords: { latitude, longitude },
+            } = await Location.getCurrentPositionAsync(); //coords es6에서 사용
+            console.log(latitude, longitude);
+            // this.getWeather(lat, long);
+            this.getWeather(latitude, longitude);
             //Send to API and get weather
         } catch (error) {
             console.log(error);
@@ -26,9 +41,9 @@ export default class extends React.Component {
         this.getLocation();
     }
     render() {
-        const { isLoading } = this.state;
-        console.log(isLoading);
-        return isLoading ? <Loading /> : null;
+        const { isLoading, temp } = this.state;
+        console.log(isLoading, temp);
+        return isLoading ? <Loading /> : <Weather temp={Math.round(temp)} />;
     }
     // return <Loading />;
 }
