@@ -3,3 +3,4 @@ expo init 폴더이름
 expo install expo-locatio
 npm install axios
 npm install prop-types
+expo-linear-gradient
